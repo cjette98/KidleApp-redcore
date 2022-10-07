@@ -1,45 +1,30 @@
-import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity,Platform, StatusBar } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Platform, Image, StatusBar } from 'react-native'
 import React, { useState } from 'react';
-import mainContainer from './Main.Container'
+import mainContainer from './index.container'
 import ViewPager from '@react-native-community/viewpager';
-
-
+import { userInfo } from '../Constant/Dummy';
+import Header from '../Components/Header';
+import CustomButton from '../Components/CustomButton';
 const KindleMain = () => {
-    const { content, selectOneFile } = mainContainer()
-    const generateBookParts = (book) => {
-        const NUM_OF_LINES = 25;
-        const CPL = 11;
-        const bookPartsLength = Math.round(book.length / CPL * NUM_OF_LINES);
-        const bookPartsList = [];
-        let bookPart = book;
-        for (let i = 1; i <= bookPartsLength; i++) {
-            if (bookPart.slice(0, CPL * NUM_OF_LINES) != "") {
-                bookPartsList.push(
-                    <View style={styles.viewStyle} key={i}>
-                        <Text style={styles.textContent}>{bookPart.slice(0, CPL * NUM_OF_LINES)}</Text>
-                        <Text style={styles.pageNumberStyle}>Page {i}</Text>
-                    </View>
-                );
-                bookPart = bookPart.slice(CPL * NUM_OF_LINES);
-            }
-        }
-        return bookPartsList;
-    }
-
+    const { bookTitle, hascontent, browsefile } = mainContainer()
     return (
         <View
             collapsable={false}
             style={styles.container}
         >
-            <TouchableOpacity 
-            style={styles.btn}
-            onPress={selectOneFile}>
-                <Text style={styles.btnlbl}>Select Book</Text>
-            </TouchableOpacity>
-            {content == null ? <Text style={{textAlign:'center'}}>No book selected</Text> : 
-            <ViewPager style={styles.viewPager} initialPage={0}>
-            {generateBookParts(content)}
-           </ViewPager>
+            <View style={{ padding: 10 }}>
+                <Header userData={userInfo} />
+               <CustomButton action={browsefile} lbl={'Browse a book'} />
+            </View>
+            {hascontent == null ? <Text style={{ textAlign: 'center' }}>No book selected</Text> :
+                <React.Fragment>
+                    <View>
+                        <Text style={styles.bookTitle}>Title : {bookTitle}</Text>
+                    </View>
+                    <ViewPager style={styles.viewPager} initialPage={0}>
+                        {hascontent}
+                    </ViewPager>
+                </React.Fragment>
             }
         </View>
     );
@@ -50,8 +35,7 @@ export default KindleMain
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        paddingTop:Platform.OS === 'android' ? StatusBar.currentHeight : 42
+        flex: 1
     },
     viewPager: {
         flex: 1,
@@ -68,14 +52,5 @@ const styles = StyleSheet.create({
         color: 'gray',
         alignSelf: 'flex-end',
     },
-    btn:{
-        backgroundColor:"pink",
-        padding:10,
-        alignItems:'center'
-    },
-    btnlbl:{
-        fontWeight:'bold',
-        fontSize:18,
-        color:'black'
-    }
+   bookTitle:{fontWeight:'bold', fontSize:20, textAlign:'center'}
 });
